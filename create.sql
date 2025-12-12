@@ -6,6 +6,7 @@ CREATE TABLE Person (
     Middle_Initial      VARCHAR(5),
     Lname               VARCHAR(20)     NOT NULL,
     Height              FLOAT,
+    Birthday            DATE            NOT NULL,
     PRIMARY KEY (User_ID), 
     UNIQUE (Email),
     CHECK (Height >= 0),
@@ -166,9 +167,9 @@ CREATE TABLE Activities (
 
 CREATE TABLE Activities_Type (
     Activities_ID       DECIMAL(20,0)   NOT NULL,
-    MRDiseases          VARCHAR(500)    NOT NULL,
-    PRIMARY KEY (Medical_ID, MRDiseases),
-    FOREIGN KEY (Medical_ID) REFERENCES Medical_Record(Medical_ID)
+    ATypes              VARCHAR(500)    NOT NULL,
+    PRIMARY KEY (Activities_ID, ATypes),
+    FOREIGN KEY (Activities_ID) REFERENCES Activities(Activities_ID)
 );
 
 CREATE TABLE Meal_Log (
@@ -177,6 +178,7 @@ CREATE TABLE Meal_Log (
     Protein             INT,
     Fat                 INT,
     Carbs               INT,
+    Calories_Amount     INT,
     DL_ID               DECIMAL(20,0)   NOT NULL,
     PRIMARY KEY (MealLog_ID),
     FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID),
@@ -184,6 +186,7 @@ CREATE TABLE Meal_Log (
     CHECK (Protein >= 0),
     CHECK (Fat >= 0),
     CHECK (Carbs >= 0)
+    CHECK (Calories_Amount >= 0)
 );
 
 CREATE TABLE MealLog_Breakfast (
