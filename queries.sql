@@ -18,87 +18,169 @@
    Store, retrieve, and update user profile information.
    ============================================================ */
 
--- FR1-A: Create a new user account
-INSERT INTO Users (user_id, username, email, created_at)
-VALUES (:user_id, :username, :email, CURRENT_DATE);
+-- Create a new user account
+INSERT INTO Person (user_id, Email, Credit, FName, Middle_Initial, Lname, Height, Birthday)
+VALUES (:user_id, :Email, 0, :FName, :Middle_Initial, :Lname, :Height. :Birthday );
 
--- FR1-B: Retrieve user profile information
-SELECT user_id, username, email, height, weight
-FROM Users
+-- Retrieve user profile information
+SELECT user_id, Email, Credit, FName, Middle_Initial, Lname, Height, Birthday
+FROM Person
 WHERE user_id = :user_id;
 
--- FR1-C: Update user profile information
-UPDATE Users
-SET height = :height,
-    weight = :weight
+
+-- Update user profile information
+UPDATE Person
+SET Email = :Email,
+    FName = :Fname,
+    Middle_Initial = :Middle_Initial,
+    LName = :Lname,
+    Height = :Height,
+    Birthday = :Birthday
 WHERE user_id = :user_id;
 
 
 /* ============================================================
-   FUNCTIONAL REQUIREMENT 2 – Workout Logging
+   FUNCTIONAL REQUIREMENT 2 – ACTIVITY Logging
    Description:
-   Log and retrieve workout session data.
+   Update and retrieve their activities on specific dates.
    ============================================================ */
 
--- FR2-A: Log a workout session
-INSERT INTO Workout (
-    workout_id, user_id, activity_type,
-    session_time, calories_burned, workout_date
-)
-VALUES (
-    :workout_id, :user_id, :activity_type,
-    :session_time, :calories_burned, :workout_date
-);
+-- Log a activity session
+INSERT INTO Activities (Activities_ID, Calories_Burned, Activites_Hour, DL_ID)
+VALUES (:Activities_ID, :Calories_Burned, :Activites_Hours, :DL_ID);
 
--- FR2-B: Retrieve workouts for a specific user
-SELECT activity_type, session_time, calories_burned, workout_date
-FROM Workout
-WHERE user_id = :user_id;
+-- Log a activity type 
+INSERT INTO Actitivities_Type (Activities_ID, ATypes)
+VALUES (:Activities_ID, :ATypes)
 
+
+-- Retrieve activity session for a specific log
+SELECT Activities_ID, Calories_Burned, Activites_Hour, DL_ID
+FROM Activities
+WHERE DL_ID = :DL_ID;
+
+-- Retrieve activity type from a specific activity session
+SELECT Activities_ID, ATypes
+FROM Activities_Type
+WHERE Activities_ID = :Activities_ID;
+
+
+-- Update activity information for a specific log
+UPDATE Activities
+SET Calories_Burned = :Calories_Burned,
+    Activites_Hour = :Activites_Hour,
+WHERE DL_ID = :DL_ID;
+
+-- Update activity type for a specific activity
+UPDATE Activities_Type
+SET ATypes = :ATypes
+WHERE DL_ID = :DL_ID;
 
 /* ============================================================
-   FUNCTIONAL REQUIREMENT 3 – Nutrition Logging
+   FUNCTIONAL REQUIREMENT 3 – Meal Logging
    Description:
    Record and analyze nutrition and meal intake.
    ============================================================ */
 
--- FR3-A: Log a meal
-INSERT INTO NutritionLog (
-    nutrition_id, user_id, calories,
-    protein, carbs, fats, meal_date
-)
-VALUES (
-    :nutrition_id, :user_id, :calories,
-    :protein, :carbs, :fats, :meal_date
-);
+-- Log a meal
+INSERT INTO Meal_Log (MealLog_ID, Calories_Goal, Protein, Fat, Carbs, Calories_Amount DL_ID)
+VALUES (:MealLog_ID, :Calories_Goal, :Protein, ,:Fat:, Carbs, :Calories_Amount, :DL_IDs);
 
--- FR3-B: Retrieve daily calorie intake
-SELECT meal_date,
-       SUM(calories) AS total_calories
-FROM NutritionLog
-WHERE user_id = :user_id
-GROUP BY meal_date;
+-- Log a Breakfast
+INSERT INTO MealLog_Breakfast (MealLog_ID, MLBreakfast)
+VALUES (:MealLog_ID, :MLBreakfast);
+
+-- Log a Lunch
+INSERT INTO MealLog_Lunch (MealLog_ID, MealLog_Lunch)
+VALUES (:MealLog_ID, :MLLunch);
+
+-- Log a Dinner
+INSERT INTO MealLog_Dinner (MealLog_ID, MealLog_Dinner)
+VALUES (:MealLog_ID, :MLDinner);
+
+-- Log a Snack
+INSERT INTO MealLog_Snack (MealLog_ID, MealLog_Snack)
+VALUES (:MealLog_ID, :MLSnack);
+
+
+-- Retrieve eated stuff at specific dates
+SELECT MealLog_ID, Calories_Goal, Protein, Fat, Carbs, Calories_Amount, DL_ID
+FROM Meal_Log
+WHERE DL_ID = :DL_ID
+
+-- Retrieve a day's breakfast
+SELECT MealLog_ID, MLBreakfast
+FROM MealLog_Breakfast
+WHERE MealLog_ID = :MealLog_ID
+
+-- Retrieve a day's lunch
+SELECT MealLog_ID, MLLunch
+FROM MealLog_Lunch
+WHERE MealLog_ID = :MealLog_ID
+
+-- Retrieve a day's dinner
+SELECT MealLog_Dinner, MLDinner
+FROM MealLog_Dinner
+WHERE MealLog_ID = :MealLog_ID
+
+-- Retrieve a day's snack
+SELECT MealLog_Snack, MLSnack
+FROM MealLog_Snack
+WHERE MealLog_ID = :MealLog_ID
+
+-- Update meal macros and calories
+UPDATE Meal_Log
+SET Calories_Goal = :Calories_Goal,
+    Protein = :Protein,
+    Fat = :Fat,
+    Carbs = :Carbs,
+    Calories_Amount = :Calories_Amount,
+WHERE DL_ID = :DL_ID
+
+-- Update meal breakfast
+UPDATE MealLog_Breakfast
+SET MLBreakfast = :MLBreakfast,
+WHERE MealLog_ID = :MealLog_ID
+
+-- Update meal lunch
+UPDATE MealLog_Lunch
+SET MLLunch = :MLLunch,
+WHERE MealLog_ID = :MealLog_ID
+
+-- Update meal dinner
+UPDATE MealLog_Dinner
+SET MLDinner = :MLDinner,
+WHERE MealLog_ID = :MealLog_ID
+
+-- Update meal snack
+UPDATE MealLog_Snack
+SET MLSnack = :MLSnack,
+WHERE MealLog_ID = :MealLog_ID
 
 
 /* ============================================================
    FUNCTIONAL REQUIREMENT 4 – Goals Management
    Description:
-   Set, update, and track fitness goals.
+   Log, view, and update fitness goals.
    ============================================================ */
 
--- FR4-A: Set a user goal
-INSERT INTO Goals (goal_id, user_id, goal_type, target_value)
-VALUES (:goal_id, :user_id, :goal_type, :target_value);
+-- log a user goal
+INSERT INTO Goals (Goal_ID, Daily_goal, Monthly_goal, Yearly_goal, DL_ID)
+VALUES (:Goal_ID, :Daily_goal, :Monthly_goal, :Yearly_goal, :DL_ID);
 
--- FR4-B: Update goal progress
-UPDATE Goals
-SET current_value = :current_value
-WHERE goal_id = :goal_id;
 
--- FR4-C: View goal progress
-SELECT goal_type, current_value, target_value
+-- view user goals
+SELECT Goal_ID, Daily_goal, Monthly_goal, Yearly_goal, DL_ID
 FROM Goals
-WHERE user_id = :user_id;
+WHERE DL_ID = :DL_ID;
+
+
+-- Update goals
+UPDATE Goals
+SET Daily_goal = :Daily_goal,
+    Monthly_goal = :Monthly_goal,
+    Yearly_goal = :Yearly_goal
+WHERE Goal_ID = :Goal_ID
 
 
 /* ============================================================
@@ -107,29 +189,35 @@ WHERE user_id = :user_id;
    Manage friends and view friends’ activity.
    ============================================================ */
 
--- FR5-A: Add a friend request
-INSERT INTO Friends (user_id, friend_id, status)
-VALUES (:user_id, :friend_id, 'Pending');
+-- log friend information
+INSERT INTO Friends (Friend_ID, Login_Status, PU_ID)
+VALUES (:Friend_ID, :Login_Status, :PU_ID);
 
--- FR5-B: Accept a friend request
-UPDATE Friends
-SET status = 'Accepted'
-WHERE user_id = :user_id
-  AND friend_id = :friend_id;
+-- log friend stats
+INSERT INTO Friend_Stats (Friend_ID, FStats)
+VALUES (:Friend_ID, :FStats);
 
--- FR5-C: View friends' workouts
-SELECT w.user_id, w.activity_type, w.workout_date
-FROM Friends f
-JOIN Workout w ON f.friend_id = w.user_id
-WHERE f.user_id = :user_id
-  AND f.status = 'Accepted';
+
+-- View friends information
+SELECT Friend_ID, Login_Status
+FROM Friend
+WHERE PU_ID = :PU_ID;
+
+-- View friends stats
+SELECT Friend_ID, FStats
+FROM Friend_Stats
+WHERE Friend_ID = :Friend_ID
 
 
 /* ============================================================
    FUNCTIONAL REQUIREMENT 6 – Challenges
    Description:
-   Join challenges, track points, and view leaderboards.
+   Join challenges, track points
    ============================================================ */
+
+
+CHECK (challenge_complete = TRUE), then DailyRivals_Credit += User_ID.Credit
+
 
 -- FR6-A: Join a challenge
 INSERT INTO ChallengeParticipants (challenge_id, user_id, points)
