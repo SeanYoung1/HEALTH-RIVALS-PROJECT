@@ -166,3 +166,10 @@ class MealLog_Snack:
 
 
 # query daily logs
+
+def main():
+    print("Welcome to the Health Tracking App! Health Rivals!!")
+    
+    
+if __name__ == "__main__":
+    main()
