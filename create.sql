@@ -1,226 +1,202 @@
+textPRAGMA foreign_keys = ON;
+
 CREATE TABLE Challenges (
-    Challenge_ID        DECIMAL(20,0)   NOT NULL,
-    Daily_Challenge     VARCHAR(500)    NOT NULL,
-    Challenge_Complete  BOOLEAN         DEFAULT FALSE,
-    DailyRivals_Credit  INT             NOT NULL,
-    Special_Challenge   VARCHAR(500)    NOT NULL,
-    PRIMARY KEY (Challenge_ID)
+    Challenge_ID        INTEGER         PRIMARY KEY,
+    Daily_Challenge     TEXT            NOT NULL,
+    Challenge_Complete  INTEGER         NOT NULL DEFAULT 0
+                                        CHECK (Challenge_Complete IN (0, 1)),
+    DailyRivals_Credit  INTEGER         NOT NULL,
+    Special_Challenge   TEXT            NOT NULL,
 );
 
 CREATE TABLE Person (
-    User_ID             DECIMAL(20,0)   NOT NULL,
-    Email               VARCHAR(50)     NOT NULL,
-    Credit              INT             NOT NULL,
-    Fname               VARCHAR(20)     NOT NULL,
-    Middle_Initial      VARCHAR(5),
-    Lname               VARCHAR(20)     NOT NULL,
-    Height              FLOAT,
+    User_ID             INTEGER         PRIMARY KEY,
+    Email               TEXT            NOT NULL
+                                        CHECK (Email LIKE '%_@__%.__%'),
+    Credit              INTEGER         NOT NULL DEFAULT 0 CHECK (Credit >= 0),
+    Fname               TEXT            NOT NULL CHECK(LENGTH(Fname) > 0),
+    Middle_Initial      TEXT,
+    Lname               TEXT            NOT NULL CHECK(LENGTH(Lname) > 0),
+    Height              REAL            NOT NULL CHECK (Height >= 0),
     Birthday            DATE            NOT NULL,
-    Challenge_ID        DECIMAL(20,0)   NOT NULL,
-    PRIMARY KEY (User_ID), 
-    FOREIGN KEY (Challenge_ID) REFERENCES Challenges(Challenge_ID),
+    Challenge_ID        INTEGER         NOT NULL,
+    FOREIGN KEY (Challenge_ID) REFERENCES Challenges(Challenge_ID) ON DELETE CASCADE,
     UNIQUE (Email),
-    CHECK (Height >= 0),
-    CHECK (Credit >= 0)
 );
 
 CREATE TABLE Friend (
-    Friend_ID           DECIMAL(20,0)   NOT NULL,
-    Login_Status        BOOLEAN         DEFAULT FALSE,
-    PU_ID               DECIMAL(20,0)   NOT NULL,
-    PRIMARY KEY (Friend_ID),
-    FOREIGN KEY (PU_ID) REFERENCES Person(User_ID)
+    Friend_ID           INTEGER   PRIMARY KEY,
+    Login_Status        INTEGER   NOT NULL DEFAULT 0
+                        CHECK (Login_Status IN (0, 1)),
+    PU_ID               INTEGER   NOT NULL,
+    FOREIGN KEY (PU_ID) REFERENCES Person(User_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Friend_Stats (
-    Friend_ID           DECIMAL(20,0)   NOT NULL,
-    FStats              VARCHAR(150)    NOT NULL,
+    Friend_ID           INTEGER         NOT NULL,
+    FStats              TEXT            NOT NULL CHECK (length(FStats) > 0),
     PRIMARY KEY (Friend_ID, FStats),
-    FOREIGN KEY (Friend_ID) REFERENCES Friend(Friend_ID)       
+    FOREIGN KEY (Friend_ID) REFERENCES Friend(Friend_ID) ON DELETE CASCADE      
 );
 
 CREATE TABLE Device (
-    Device_ID           DECIMAL(20,0)   NOT NULL,
-    Phone               BOOLEAN         DEFAULT FALSE,
-    Smart_watch         BOOLEAN         DEFAULT FALSE,
-    Implanted_chip      BOOLEAN         DEFAULT FALSE,
-    PU_ID               DECIMAL(20,0)   NOT NULL,
-    PRIMARY KEY (Device_ID),
-    FOREIGN KEY (PU_ID) REFERENCES Person(User_ID)         
+    Device_ID           INTEGER   PRIMARY KEY,
+    Phone               INTEGER   NOT NULL DEFAULT 0
+                        CHECK (Phone IN (0, 1)),
+    Smart_watch         INTEGER   NOT NULL DEFAULT 0,
+                        CHECK (Smart_watch IN (0, 1)),
+    Implanted_chip      INTEGER   NOT NULL DEFAULT 0
+                        CHECK (Implanted_chip IN (0, 1)),
+    PU_ID               INTEGER   NOT NULL,
+    FOREIGN KEY (PU_ID) REFERENCES Person(User_ID) ON DELETE CASCADE        
 );
 
 CREATE TABLE Medical_Record (
-    Medical_ID          DECIMAL(20,0)   NOT NULL,
-    Past_surgeries      VARCHAR(200),
-    Past_Medication     VARCHAR(500),
-    PU_ID               DECIMAL(20,0)   NOT NULL,
-    PRIMARY KEY (Medical_ID),
-    FOREIGN KEY (PU_ID) REFERENCES Person(User_ID)         
+    Medical_ID          INTEGER   PRIMARY KEY,
+    Past_surgeries      TEXT,
+    Past_Medication     TEXT,
+    PU_ID               INTEGER   NOT NULL,
+    FOREIGN KEY (PU_ID) REFERENCES Person(User_ID) ON DELETE CASCADE       
 );
 
 CREATE TABLE Medical_Record_Allegies (
-    Medical_ID          DECIMAL(20,0)   NOT NULL,
-    MRAllegies          VARCHAR(500)    NOT NULL,
+    Medical_ID          INTEGER   NOT NULL,
+    MRAllegies          TEXT      NOT NULL CHECK (length(MRAllegies) > 0),
     PRIMARY KEY (Medical_ID, MRAllegies),
-    FOREIGN KEY (Medical_ID) REFERENCES Medical_Record(Medical_ID)
+    FOREIGN KEY (Medical_ID) REFERENCES Medical_Record(Medical_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Medical_Record_Diseases (
-    Medical_ID          DECIMAL(20,0)   NOT NULL,
-    MRDiseases          VARCHAR(500)    NOT NULL,
+    Medical_ID          INTEGER   NOT NULL,
+    MRDiseases          TEXT      NOT NULL CHECK (length(MRDiseases) > 0),
     PRIMARY KEY (Medical_ID, MRDiseases),
-    FOREIGN KEY (Medical_ID) REFERENCES Medical_Record(Medical_ID)
+    FOREIGN KEY (Medical_ID) REFERENCES Medical_Record(Medical_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Medical_Record_Disabilities (
-    Medical_ID          DECIMAL(20,0)   NOT NULL,
-    MRDisabilities      VARCHAR(500)    NOT NULL,
+    Medical_ID          INTEGER   NOT NULL,
+    MRDisabilities      TEXT      NOT NULL CHECK (length(MRDisabilities) > 0),
     PRIMARY KEY (Medical_ID, MRDisabilities),
     FOREIGN KEY (Medical_ID) REFERENCES Medical_Record(Medical_ID)
 );
 
 CREATE TABLE Daily_Log (
-    Log_ID              DECIMAL(20,0)   NOT NULL,
-    Log_Date            DATE            NOT NULL,
-    PU_ID               DECIMAL(20,0)   NOT NULL,
-    PRIMARY KEY (Log_ID),
+    Log_ID              INTEGER   PRIMARY KEY,
+    Log_Date            TEXT      NOT NULL,
+    PU_ID               INTEGER   NOT NULL,
     UNIQUE (Log_Date, PU_ID),
-    FOREIGN KEY (PU_ID) REFERENCES Person(User_ID)
+    FOREIGN KEY (PU_ID) REFERENCES Person(User_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Blood_Pressure (
-    Blood_ID            DECIMAL(20,0)   NOT NULL,
-    Blood_Status        INT,
-    DL_ID               DECIMAL(20,0)   NOT NULL,
-    PRIMARY KEY (Blood_ID),
-    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID),
-    CHECK (Blood_Status >= 0)
+    Blood_ID            INTEGER   PRIMARY KEY,
+    Blood_Status        INTEGER   CHECK (Blood_Status >= 0 AND Blood_Status <= 300),
+    DL_ID               INTEGER   NOT NULL,
+    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Sleep_Hours (
-    SleepHour_ID        DECIMAL(20,0)   NOT NULL,
-    Sleep_Quality       INT,
-    Hours_Slept         FLOAT,
-    Sleep_Pattern       TIME,
-    DL_ID               DECIMAL(20,0)   NOT NULL,
-    PRIMARY KEY (SleepHour_ID),
-    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID),
-    CHECK (Sleep_Quality >= 0),
-    CHECK (Hours_Slept >= 0.0)              
+    SleepHour_ID        INTEGER   PRIMARY KEY,
+    Sleep_Quality       INTEGER   CHECK (Sleep_Quality >= 0 AND Sleep_Quality <= 10),
+    Hours_Slept         REAL      CHECK (Hours_Slept >= 0 and Hours_Slept <= 24.0),
+    Sleep_Pattern       TEXT,
+    DL_ID               INTEGER   NOT NULL,
+    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID) ON DELETE CASCADE            
 );
 
 CREATE TABLE Weight (
-    Weight_ID           DECIMAL(20,0)   NOT NULL,
-    Total_Weight        INT,
-    Weight_Gain         INT,
-    Weight_Loss         INT,
-    DL_ID               DECIMAL(20,0)   NOT NULL,
-    PRIMARY KEY (Weight_ID),
-    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID),
-    CHECK (Total_Weight >= 0)
+    Weight_ID           INTEGER   PRIMARY KEY,
+    Total_Weight        INTEGER   CHECK (Total_Weight >= 0 AND Total_Weight <= 500),
+    Weight_Gain         INTEGER   DEFAULT 0,
+    Weight_Loss         INTEGER   DEFAULT 0,
+    DL_ID               INTEGER   NOT NULL,
+    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Goals (
-    Goal_ID             DECIMAL(20,0)   NOT NULL,
-    Daily_goal          VARCHAR(500),
-    Monthly_goal        VARCHAR(500),
-    Yearly_goal         VARCHAR(500),
-    DL_ID               DECIMAL(20,0)   NOT NULL,
-    PRIMARY KEY (Goal_ID),
-    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID)
+    Goal_ID             INTEGER   PRIMARY KEY,
+    Daily_goal          TEXT,
+    Monthly_goal        TEXT,
+    Yearly_goal         TEXT,
+    DL_ID               INTEGER   NOT NULL,
+    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Challenges_Display (
-    Display_ID          DECIMAL(20,0)   NOT NULL,
-    Challenge_ID        DECIMAL(20,0)   NOT NULL,
-    DL_ID               DECIMAL(20,0)   NOT NULL,
-    PRIMARY KEY (Display_ID),
-    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID),
-    FOREIGN KEY (Challenge_ID) REFERENCES Challenges(Challenge_ID)
+    Display_ID          INTEGER   PRIMARY KEY,
+    Challenge_ID        INTEGER   NOT NULL,
+    DL_ID               INTEGER   NOT NULL,
+    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID) ON DELETE CASCADE,
+    FOREIGN KEY (Challenge_ID) REFERENCES Challenges(Challenge_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Medication (
-    Medication_ID       DECIMAL(20,0)   NOT NULL,
-    Medication_Time     TIME,
-    Dosage              INT,
-    DL_ID               DECIMAL(20,0)   NOT NULL,
-    PRIMARY KEY (Medication_ID),
-    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID),
-    CHECK (Dosage >= 0)
+    Medication_ID       INTEGER   PRIMARY KEY,
+    Medication_Time     TEXT,
+    Dosage              INTEGER   CHECK (Dosage >= 0 AND Dosage <= 1000),
+    DL_ID               INTEGER   NOT NULL,
+    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID) ON DELETE CASCADE,
 );
 
 CREATE TABLE Steps (
-    Step_ID             DECIMAL(20,0)   NOT NULL,
-    Step_Goal           INT,
-    Total_Steps         INT,
-    Daily_Steps         INT,
-    DL_ID               DECIMAL(20,0)   NOT NULL,
-    PRIMARY KEY (Step_ID),
-    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID),
-    CHECK (Step_Goal >= 0),
-    CHECK (Daily_Steps >= 0),
-    CHECK (Total_Steps >= Daily_Steps)
+    Step_ID             INTEGER   PRIMARY KEY,
+    Step_Goal           INTEGER   DEFAULT 0 CHECK (Step_Goal >= 0),
+    Total_Steps         INTEGER   DEFAULT 0 CHECK (Total_Steps >= 0),
+    Daily_Steps         INTEGER   DEFAULT 0 CHECK (Daily_Steps >= 0),
+    DL_ID               INTEGER   NOT NULL,
+    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Activities (
-    Activities_ID       DECIMAL(20,0)   NOT NULL,
-    Calories_Burned     INT,
-    Activities_Hours     FLOAT,
-    DL_ID               DECIMAL(20,0)   NOT NULL,
-    PRIMARY KEY (Activities_ID),
-    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID),
-    CHECK (Calories_Burned >= 0),
-    CHECK (Activities_Hours >= 0)          
+    Activities_ID       INTEGER   PRIMARY KEY,
+    Calories_Burned     INTEGER   DEFAULT 0 CHECK (Calories_Burned >= 0),
+    Activities_Hours    REAL      DEFAULT 0 CHECK (Activities_Hours >= 0.0),
+    DL_ID               INTEGER   NOT NULL,
+    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID) ON DELETE CASCADE,        
 );
 
 CREATE TABLE Activities_Type (
-    Activities_ID       DECIMAL(20,0)   NOT NULL,
-    ATypes              VARCHAR(500)    NOT NULL,
+    Activities_ID       INTEGER   NOT NULL,
+    ATypes              TEXT      NOT NULL CHECK (length(ATypes) > 0),
     PRIMARY KEY (Activities_ID, ATypes),
-    FOREIGN KEY (Activities_ID) REFERENCES Activities(Activities_ID)
+    FOREIGN KEY (Activities_ID) REFERENCES Activities(Activities_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Meal_Log (
-    MealLog_ID          DECIMAL(20,0)   NOT NULL,
-    Calories_Goal       INT,
-    Protein             INT,
-    Fat                 INT,
-    Carbs               INT,
-    Calories_Amount     INT,
-    DL_ID               DECIMAL(20,0)   NOT NULL,
-    PRIMARY KEY (MealLog_ID),
-    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID),
-    CHECK (Calories_Goal >= 0),
-    CHECK (Protein >= 0),
-    CHECK (Fat >= 0),
-    CHECK (Carbs >= 0),
-    CHECK (Calories_Amount >= 0)
+    MealLog_ID          INTEGER   PRIMARY KEY,
+    Calories_Goal       INTEGER   DEFAULT 2000 CHECK (Calories_Goal >= 0),
+    Protein             INTEGER   DEFAULT 0 CHECK (Protein >= 0),
+    Fat                 INTEGER   DEFAULT 0 CHECK (Fat >= 0),
+    Carbs               INTEGER   DEFAULT 0 CHECK (Carbs >= 0),
+    Calories_Amount     INTEGER   DEFAULT 0 CHECK (Calories_Amount >= 0),
+    DL_ID               INTEGER   NOT NULL,
+    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID) ON DELETE CASCADE,
 );
 
 CREATE TABLE MealLog_Breakfast (
-    MealLog_ID          DECIMAL(20,0)   NOT NULL,
-    MLBreakfast         VARCHAR(500)     NOT NULL,
+    MealLog_ID          INTEGER   NOT NULL,
+    MLBreakfast         TEXT      NOT NULL CHECK (length(MLBreakfast) > 0),
     PRIMARY KEY (MealLog_ID, MLBreakfast),
-    FOREIGN KEY (MealLog_ID) REFERENCES Meal_Log(MealLog_ID)
+    FOREIGN KEY (MealLog_ID) REFERENCES Meal_Log(MealLog_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE MealLog_Lunch (
-    MealLog_ID          DECIMAL(20,0)   NOT NULL,
-    MLLunch             VARCHAR(500)     NOT NULL,
+    MealLog_ID          INTEGER   NOT NULL,
+    MLLunch             TEXT      NOT NULL CHECK (length(MLLunch) > 0),
     PRIMARY KEY (MealLog_ID, MLLunch),
-    FOREIGN KEY (MealLog_ID) REFERENCES Meal_Log(MealLog_ID)
+    FOREIGN KEY (MealLog_ID) REFERENCES Meal_Log(MealLog_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE MealLog_Dinner (
-    MealLog_ID          DECIMAL(20,0)   NOT NULL,
-    MLDinner            VARCHAR(500)     NOT NULL,
+    MealLog_ID          INTEGER   NOT NULL,
+    MLDinner            TEXT      NOT NULL CHECK (length(MLDinner) > 0),
     PRIMARY KEY (MealLog_ID, MLDinner),
-    FOREIGN KEY (MealLog_ID) REFERENCES Meal_Log(MealLog_ID)
+    FOREIGN KEY (MealLog_ID) REFERENCES Meal_Log(MealLog_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE MealLog_Snack (
-    MealLog_ID          DECIMAL(20,0)   NOT NULL,
-    MLSnack             VARCHAR(500)     NOT NULL,
+    MealLog_ID          INTEGER   NOT NULL,
+    MLSnack             TEXT      NOT NULL CHECK (length(MLSnack) > 0),
     PRIMARY KEY (MealLog_ID, MLSnack),
-    FOREIGN KEY (MealLog_ID) REFERENCES Meal_Log(MealLog_ID)
+    FOREIGN KEY (MealLog_ID) REFERENCES Meal_Log(MealLog_ID) ON DELETE CASCADE
 );
