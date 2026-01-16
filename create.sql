@@ -6,7 +6,7 @@ CREATE TABLE Challenges (
     Challenge_Complete  INTEGER         NOT NULL DEFAULT 0
                                         CHECK (Challenge_Complete IN (0, 1)),
     DailyRivals_Credit  INTEGER         NOT NULL,
-    Special_Challenge   TEXT            NOT NULL,
+    Special_Challenge   TEXT            NOT NULL
 );
 
 CREATE TABLE Person (
@@ -18,10 +18,10 @@ CREATE TABLE Person (
     Middle_Initial      TEXT,
     Lname               TEXT            NOT NULL CHECK(LENGTH(Lname) > 0),
     Height              REAL            NOT NULL CHECK (Height >= 0),
-    Birthday            DATE            NOT NULL,
+    Birthday            TEXT            NOT NULL,
     Challenge_ID        INTEGER         NOT NULL,
     FOREIGN KEY (Challenge_ID) REFERENCES Challenges(Challenge_ID) ON DELETE CASCADE,
-    UNIQUE (Email),
+    UNIQUE (Email)
 );
 
 CREATE TABLE Friend (
@@ -43,7 +43,7 @@ CREATE TABLE Device (
     Device_ID           INTEGER   PRIMARY KEY,
     Phone               INTEGER   NOT NULL DEFAULT 0
                         CHECK (Phone IN (0, 1)),
-    Smart_watch         INTEGER   NOT NULL DEFAULT 0,
+    Smart_watch         INTEGER   NOT NULL DEFAULT 0
                         CHECK (Smart_watch IN (0, 1)),
     Implanted_chip      INTEGER   NOT NULL DEFAULT 0
                         CHECK (Implanted_chip IN (0, 1)),
@@ -59,10 +59,10 @@ CREATE TABLE Medical_Record (
     FOREIGN KEY (PU_ID) REFERENCES Person(User_ID) ON DELETE CASCADE       
 );
 
-CREATE TABLE Medical_Record_Allegies (
+CREATE TABLE Medical_Record_Allergies (
     Medical_ID          INTEGER   NOT NULL,
-    MRAllegies          TEXT      NOT NULL CHECK (length(MRAllegies) > 0),
-    PRIMARY KEY (Medical_ID, MRAllegies),
+    MRAllergies         TEXT      NOT NULL CHECK (length(MRAllergies) > 0),
+    PRIMARY KEY (Medical_ID, MRAllergies),
     FOREIGN KEY (Medical_ID) REFERENCES Medical_Record(Medical_ID) ON DELETE CASCADE
 );
 
@@ -77,7 +77,7 @@ CREATE TABLE Medical_Record_Disabilities (
     Medical_ID          INTEGER   NOT NULL,
     MRDisabilities      TEXT      NOT NULL CHECK (length(MRDisabilities) > 0),
     PRIMARY KEY (Medical_ID, MRDisabilities),
-    FOREIGN KEY (Medical_ID) REFERENCES Medical_Record(Medical_ID)
+    FOREIGN KEY (Medical_ID) REFERENCES Medical_Record(Medical_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Daily_Log (
@@ -98,7 +98,7 @@ CREATE TABLE Blood_Pressure (
 CREATE TABLE Sleep_Hours (
     SleepHour_ID        INTEGER   PRIMARY KEY,
     Sleep_Quality       INTEGER   CHECK (Sleep_Quality >= 0 AND Sleep_Quality <= 10),
-    Hours_Slept         REAL      CHECK (Hours_Slept >= 0 and Hours_Slept <= 24.0),
+    Hours_Slept         REAL      CHECK (Hours_Slept >= 0 AND Hours_Slept <= 24.0),
     Sleep_Pattern       TEXT,
     DL_ID               INTEGER   NOT NULL,
     FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID) ON DELETE CASCADE            
@@ -135,7 +135,7 @@ CREATE TABLE Medication (
     Medication_Time     TEXT,
     Dosage              INTEGER   CHECK (Dosage >= 0 AND Dosage <= 1000),
     DL_ID               INTEGER   NOT NULL,
-    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID) ON DELETE CASCADE,
+    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Steps (
@@ -152,7 +152,7 @@ CREATE TABLE Activities (
     Calories_Burned     INTEGER   DEFAULT 0 CHECK (Calories_Burned >= 0),
     Activities_Hours    REAL      DEFAULT 0 CHECK (Activities_Hours >= 0.0),
     DL_ID               INTEGER   NOT NULL,
-    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID) ON DELETE CASCADE,        
+    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID) ON DELETE CASCADE        
 );
 
 CREATE TABLE Activities_Type (
@@ -170,7 +170,7 @@ CREATE TABLE Meal_Log (
     Carbs               INTEGER   DEFAULT 0 CHECK (Carbs >= 0),
     Calories_Amount     INTEGER   DEFAULT 0 CHECK (Calories_Amount >= 0),
     DL_ID               INTEGER   NOT NULL,
-    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID) ON DELETE CASCADE,
+    FOREIGN KEY (DL_ID) REFERENCES Daily_Log(Log_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE MealLog_Breakfast (
