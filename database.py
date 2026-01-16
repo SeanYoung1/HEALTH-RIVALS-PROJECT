@@ -25,7 +25,7 @@ def add_person(User_ID, Email, Credit, FName, Middle_Initial, Lname, Height, Bir
     
     # Insert row into Person table
     cursor.execute("""
-          INSERT INTO Person (User_ID, Email, Credit, FName, Middle_Initial, Lname, Height, Birthday, Challenge_ID))
+          INSERT INTO Person (User_ID, Email, Credit, FName, Middle_Initial, Lname, Height, Birthday, Challenge_ID)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (User_ID, Email, Credit, FName, Middle_Initial, Lname, Height, Birthday, Challenge_ID))
 
@@ -43,10 +43,10 @@ def retrieve_person(User_ID):
          SELECT User_ID, Email, Credit, FName, Middle_Initial, Lname, Height, Birthday
          FROM Person
          WHERE User_ID = ?
-    """, (User_ID))
+    """, (User_ID,))
 
     # Fetch one row from the result set
-    person = cursor.fetchnone()
+    person = cursor.fetchone()
     conn.close()
     # Return the person as a dictionary or None if not found
     return dict(person) if person else None
@@ -64,7 +64,7 @@ def update_person(User_ID, Email, FName, Middle_Initial, Lname, Height, Birthday
           FName = ?,
           Middle_Initial = ?,
           LName = ?,
-          Height = ,
+          Height = ?,
           Birthday = ?
           WHERE User_ID = ?
     """, (Email, FName, Middle_Initial, Lname, Height, Birthday, User_ID))
@@ -106,9 +106,9 @@ def retrieve_activities(DL_ID):
           SELECT Activities_ID, Calories_Burned, Activities_Hours, DL_ID
           FROM Activities
           WHERE DL_ID = ?
-    """, (DL_ID))
+    """, (DL_ID,))
     
-    activities = cursor.fetchnone()
+    activities = cursor.fetchone()
     conn.close()
     return dict(activities) if activities else None    
     
@@ -120,9 +120,9 @@ def retrieve_activities_type(Activities_ID):
           SELECT Activities_ID, ATypes
           FROM Activities_Type
           WHERE Activities_ID = ?
-    """, (Activities_ID))
+    """, (Activities_ID,))
     
-    activities_type = cursor.fetchnone()
+    activities_type = cursor.fetchone()
     conn.close()
     return dict(activities_type) if activities_type else None
 
@@ -133,7 +133,7 @@ def update_activities(DL_ID, Calories_Burned, Activities_Hours):
     cursor.execute("""
           UPDATE Activities
           SET Calories_Burned = ?,
-          SET Activities_Hours = ?
+              Activities_Hours = ?
           WHERE DL_ID = ?
     """, (Calories_Burned, Activities_Hours, DL_ID))
 
@@ -146,7 +146,7 @@ def update_activities_type(Activities_ID, ATypes):
     
     cursor.execute("""
           UPDATE Activities_Type
-          SET ATypes = ?,
+          SET ATypes = ?
           WHERE Activities_ID = ?
     """, (ATypes, Activities_ID))
 
@@ -221,9 +221,9 @@ def retrieve_meal_log(DL_ID):
          SELECT MealLog_ID, Calories_Goal, Protein, Fat, Carbs, Calories_Amount, DL_ID
          FROM Meal_Log
          WHERE DL_ID = ?
-    """, (DL_ID))
+    """, (DL_ID,))
     
-    meal_log = cursor.fetchnone()
+    meal_log = cursor.fetchone()
     conn.close()
     return dict(meal_log) if meal_log else None
 
@@ -235,9 +235,9 @@ def retrieve_meal_breakfast(MealLog_ID):
          SELECT MealLog_ID, MLBreakfast
          FROM MealLog_Breakfast
          WHERE MealLog_ID = ?
-    """, (MealLog_ID))
+    """, (MealLog_ID,))
     
-    meal_breakfast = cursor.fetchnone()
+    meal_breakfast = cursor.fetchone()
     conn.close()
     return dict(meal_breakfast) if meal_breakfast else None
 
@@ -249,9 +249,9 @@ def retrieve_meal_lunch(MealLog_ID):
          SELECT MealLog_ID, MLLunch
          FROM MealLog_Lunch
          WHERE MealLog_ID = ?
-    """, (MealLog_ID))
+    """, (MealLog_ID,))
     
-    meal_lunch = cursor.fetchnone()
+    meal_lunch = cursor.fetchone()
     conn.close()
     return dict(meal_lunch) if meal_lunch else None
 
@@ -263,9 +263,9 @@ def retrieve_meal_dinner(MealLog_ID):
          SELECT MealLog_ID, MLDinner
          FROM MealLog_Dinner
          WHERE MealLog_ID = ?
-    """, (MealLog_ID))
+    """, (MealLog_ID,))
     
-    meal_dinner = cursor.fetchnone()
+    meal_dinner = cursor.fetchone()
     conn.close()
     return dict(meal_dinner) if meal_dinner else None
 
@@ -277,9 +277,9 @@ def retrieve_meal_snack(MealLog_ID):
          SELECT MealLog_ID, MLSnack
          FROM MealLog_Snack
          WHERE MealLog_ID = ?
-    """, (MealLog_ID))
+    """, (MealLog_ID,))
     
-    meal_snack = cursor.fetchnone()
+    meal_snack = cursor.fetchone()
     conn.close()
     return dict(meal_snack) if meal_snack else None
 
@@ -366,7 +366,7 @@ def add_goals(Goal_ID, Daily_goal, Monthly_goal, Yearly_goal, DL_ID):
     conn.close()
 
 
-def retrieve_user_goal(Goal_ID):
+def retrieve_user_goal(DL_ID):
     conn = get_connection()
     cursor = conn.cursor()
     
@@ -374,9 +374,9 @@ def retrieve_user_goal(Goal_ID):
            SELECT Goal_ID, Daily_goal, Monthly_goal, Yearly_goal, DL_ID
            FROM Goals
            WHERE DL_ID = ?
-    """, (Goal_ID))
+    """, (DL_ID,))
     
-    user_goals = cursor.fetchnone()
+    user_goals = cursor.fetchone()
     conn.close()
     return dict(user_goals) if user_goals else None
 
@@ -387,8 +387,8 @@ def update_goals(DL_ID, Daily_goal, Monthly_goal, Yearly_goal):
     cursor.execute("""
           UPDATE Goals
           SET Daily_goal = ?,
-          SET Monthly_goal = ?,
-          Yearly_goal = ?
+              Monthly_goal = ?,
+              Yearly_goal = ?
           WHERE DL_ID = ?
     """, (Daily_goal, Monthly_goal, Yearly_goal, DL_ID))
 
@@ -428,9 +428,9 @@ def retrieve_friend_info(PU_ID):
            SELECT Friend_ID, Login_Status
            FROM Friend
            WHERE PU_ID = ?
-    """, (PU_ID))
+    """, (PU_ID,))
     
-    friend_info = cursor.fetchnone()
+    friend_info = cursor.fetchone()
     conn.close()
     return dict(friend_info) if friend_info else None
 
@@ -442,9 +442,9 @@ def retrieve_friend_stats(Friend_ID):
            SELECT Friend_ID, FStats
            FROM Friend_Stats
            WHERE Friend_ID = ?
-    """, (Friend_ID))
+    """, (Friend_ID,))
     
-    friend_stats = cursor.fetchnone()
+    friend_stats = cursor.fetchone()
     conn.close()
     return dict(friend_stats) if friend_stats else None
 
@@ -470,9 +470,9 @@ def retrieve_challenge(Challenge_ID):
            SELECT Challenge_ID, Daily_Challenge, Challenge_Complete, DailyRivals_Credit, Special_Challenge
            FROM Challenges
            WHERE Challenge_ID = ?
-    """, (Challenge_ID))
+    """, (Challenge_ID,))
     
-    challenge = cursor.fetchnone()
+    challenge = cursor.fetchone()
     conn.close()
     return dict(challenge) if challenge else None
 
@@ -485,7 +485,7 @@ def update_challenges_completion(Challenge_ID):
         UPDATE Challenges
         SET Challenge_Complete = TRUE
         WHERE Challenge_ID = ?
-    """, (Challenge_ID))
+    """, (Challenge_ID,))
 
     conn.commit()
     conn.close()
@@ -528,7 +528,7 @@ def add_device(Device_ID, Phone, Smart_watch, Implanted_chip, PU_ID):
     conn.commit()
     conn.close()
 
-def retrieve_device(Device_ID, Phone, Smart_watch, Implanted_chip, PU_ID):
+def retrieve_device(PU_ID):
     conn = get_connection()
     cursor = conn.cursor()
     
@@ -536,9 +536,9 @@ def retrieve_device(Device_ID, Phone, Smart_watch, Implanted_chip, PU_ID):
            SELECT Device_ID, Phone, Smart_watch, Implanted_chip, PU_ID
            FROM Device
            WHERE PU_ID = ?
-    """, (Device_ID, Phone, Smart_watch, Implanted_chip, PU_ID))
+    """, (PU_ID,))
 
-    device = cursor.fetchnone()
+    device = cursor.fetchone()
     conn.close()
     return dict(device) if device else None
 
@@ -548,11 +548,11 @@ def update_devices(PU_ID, Phone, Smart_watch, Implanted_chip):
     
     cursor.execute("""
         UPDATE Device
-        SET Phone = FALSE,
-        Smart_watch = TRUE,
-        Implanted_chip = TRUE
+        SET Phone = ?,
+            Smart_watch = ?,
+            Implanted_chip = ?
         WHERE PU_ID = ?
-    """, (PU_ID))
+    """, (Phone, Smart_watch, Implanted_chip, PU_ID))
 
     conn.commit()
     conn.close()
@@ -576,12 +576,12 @@ def retrieve_steps(DL_ID):
     cursor = conn.cursor()
     
     cursor.execute("""
-         SELECT MealLog_ID, MLSnack
-         FROM MealLog_Snack
-         WHERE MealLog_ID = ?
-    """, (DL_ID))
+         SELECT Step_ID, Step_Goal, Total_Steps, Daily_Steps, DL_ID
+         FROM Steps
+         WHERE DL_ID = ?
+    """, (DL_ID,))
     
-    steps = cursor.fetchnone()
+    steps = cursor.fetchone()
     conn.close()
     return dict(steps) if steps else None
 
@@ -605,9 +605,9 @@ def retrieve_person_weight(DL_ID):
            SELECT Weight_ID, Total_Weight, Weight_Gain, Weight_Loss, DL_ID
            FROM Weight
            WHERE DL_ID = ?
-    """, (DL_ID))
+    """, (DL_ID,))
     
-    weight = cursor.fetchnone()
+    weight = cursor.fetchone()
     conn.close()
     return dict(weight) if weight else None
 
@@ -632,9 +632,9 @@ def retrieve_person_sleep(DL_ID):
         SELECT SleepHour_ID, Sleep_Quality, Hours_Slept, Sleep_Pattern, DL_ID
         FROM Sleep_Hours
         WHERE DL_ID = ?
-    """, (DL_ID))
+    """, (DL_ID,))
     
-    sleep = cursor.fetchnone()
+    sleep = cursor.fetchone()
     conn.close()
     return dict(sleep) if sleep else None
 
@@ -659,9 +659,9 @@ def retrieve_person_bloodpressure(DL_ID):
         SELECT Blood_ID, Blood_Status, DL_ID
         FROM Blood_Pressure
         WHERE DL_ID = ?
-    """, (DL_ID))
+    """, (DL_ID,))
     
-    bloodpressure = cursor.fetchnone()
+    bloodpressure = cursor.fetchone()
     conn.close()
     return dict(bloodpressure) if bloodpressure else None
 
@@ -687,9 +687,9 @@ def retrieve_medication(DL_ID):
         SELECT Medication_ID, Medication_Time, Dosage, DL_ID
         FROM Medication
         WHERE DL_ID = ?
-    """, (DL_ID))
+    """, (DL_ID,))
     
-    medication = cursor.fetchnone()
+    medication = cursor.fetchone()
     conn.close()
     return dict(medication) if medication else None
 
@@ -700,7 +700,7 @@ def update_medication(DL_ID, Medication_Time, Dosage):
     cursor.execute("""
             UPDATE Medication
             SET Medication_Time = ?,
-            SET Dosage = ?
+                Dosage = ?
             WHERE DL_ID = ?
         """, (Medication_Time, Dosage, DL_ID))
 
@@ -729,9 +729,9 @@ def retrieve_medical_record(PU_ID):
         SELECT Medical_ID, Past_surgeries, Past_Medication, PU_ID
         FROM Medical_Record
         WHERE PU_ID = ?
-    """, (PU_ID))
+    """, (PU_ID,))
     
-    record = cursor.fetchnone()
+    record = cursor.fetchone()
     conn.close()
     return dict(record) if record else None
 
@@ -741,10 +741,10 @@ def update_medical_record(PU_ID, Medical_ID, Past_surgeries, Past_Medication):
     
     cursor.execute("""
         UPDATE Medical_Record
-        SET Past_surgeries = 'Tonsil removal',
-         Past_Medication = 'Tylenol'
-        WHERE PU_ID = ?
-        """, (Medical_ID, Past_surgeries, Past_Medication, PU_ID))
+        SET Past_surgeries = ?,
+         Past_Medication = ?
+        WHERE PU_ID = ? AND Medical_ID = ?
+        """, (Past_surgeries, Past_Medication, PU_ID, Medical_ID))
 
     conn.commit()
     conn.close()
@@ -769,9 +769,9 @@ def retrieve_medical_record_allegies(Medical_ID):
         SELECT Medical_ID, MRAllegies
         FROM Medical_Record_Allegies
         WHERE Medical_ID = ?
-    """, (Medical_ID))
+    """, (Medical_ID,))
     
-    allegies = cursor.fetchnone()
+    allegies = cursor.fetchone()
     conn.close()
     return dict(allegies) if allegies else None
 
@@ -781,7 +781,7 @@ def update_medical_record_allegies(Medical_ID, MRAllegies):
     
     cursor.execute("""
         UPDATE Medical_Record_Allegies
-        MRAllegies = ?
+        SET MRAllegies = ?
         WHERE Medical_ID = ?
         """, (MRAllegies, Medical_ID))
 
@@ -809,9 +809,9 @@ def retrieve_medical_disease(Medical_ID):
         SELECT Medical_ID, MRDiseases
         FROM Medical_Record_Diseases
         WHERE Medical_ID = ?
-    """, (Medical_ID))
+    """, (Medical_ID,))
     
-    disease = cursor.fetchnone()
+    disease = cursor.fetchone()
     conn.close()
     return dict(disease) if disease else None
 
@@ -848,9 +848,9 @@ def retrieve_medical_disabilities(Medical_ID):
         SELECT Medical_ID, MRDisabilities
         FROM Medical_Record_Disabilities
         WHERE Medical_ID = ?
-    """, (Medical_ID))
+    """, (Medical_ID,))
     
-    disabilities = cursor.fetchnone()
+    disabilities = cursor.fetchone()
     conn.close()
     return dict(disabilities) if disabilities else None
 
@@ -889,4 +889,9 @@ def retrieve_daily_log(PU_ID):
           SELECT Log_ID, Log_Date, PU_ID
           FROM Daily_Log
           WHERE PU_ID = ?
-    """, (PU_ID))
+    """, (PU_ID,))
+    
+    result = cursor.fetchone()
+    conn.close()
+    
+    return dict(result) if result else None
